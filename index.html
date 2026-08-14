@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Seniru's K-Drama Diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0f0e16;
+    --ink-soft:rgba(255,255,255,0.06);
+    --ink-line:rgba(255,255,255,0.12);
+    --hanji:#f4eee2;
+    --blush:#d98d97;
+    --blush-dim:#8f5860;
+    --celadon:#7fa08f;
+    --gold:#c9a968;
+    --slate:#8590b8;
+    --text-on-dark:#f1ece2;
+    --text-on-dark-muted:#a79eb8;
+    --glass-bg:rgba(255,255,255,0.06);
+    --glass-bg-strong:rgba(255,255,255,0.10);
+    --glass-border:rgba(255,255,255,0.14);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text-on-dark);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ---------- Ambient background ---------- */
+  .bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(90px);
+    opacity:0.45;
+    will-change:transform;
+  }
+  .orb1{width:520px;height:520px;background:var(--blush);top:-160px;left:-120px;animation:float1 26s ease-in-out infinite alternate;}
+  .orb2{width:460px;height:460px;background:var(--celadon);bottom:-140px;right:-100px;animation:float2 32s ease-in-out infinite alternate;}
+  .orb3{width:380px;height:380px;background:var(--gold);top:40%;left:60%;animation:float3 22s ease-in-out infinite alternate;}
+  .orb4{width:320px;height:320px;background:var(--slate);top:65%;left:5%;animation:float1 29s ease-in-out infinite alternate-reverse;}
+
+  @keyframes float1{ from{transform:translate(0,0) scale(1);} to{transform:translate(60px,80px) scale(1.15);} }
+  @keyframes float2{ from{transform:translate(0,0) scale(1);} to{transform:translate(-70px,-50px) scale(1.1);} }
+  @keyframes float3{ from{transform:translate(0,0) scale(1);} to{transform:translate(-50px,60px) scale(0.9);} }
+
+  .page{
+    position:relative;
+    z-index:1;
+    max-width:720px;
+    margin:0 auto;
+    padding:0 20px 90px;
+    transition:max-width 0.2s ease;
+  }
+  @media (min-width:900px){
+    .page{max-width:920px;}
+  }
+  @media (min-width:1200px){
+    .page{max-width:1160px;}
+  }
+  @media (min-width:1500px){
+    .page{max-width:1360px;}
+  }
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    padding:60px 0 30px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--blush);
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px;height:7px;border-radius:50%;
+    background:var(--blush);
+    box-shadow:0 0 10px var(--blush);
+  }
+  .masthead h1{
+    font-family:'Song Myung', serif;
+    font-weight:400;
+    font-size:clamp(40px, 9vw, 60px);
+    line-height:1.05;
+    margin:0 0 8px;
+    background:linear-gradient(100deg, var(--hanji) 20%, var(--blush) 45%, var(--gold) 65%, var(--hanji) 90%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:sheen 9s ease-in-out infinite;
+  }
+  @keyframes sheen{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+  .masthead .sub{
+    font-family:'Song Myung', serif;
+    font-size:15px;
+    color:var(--text-on-dark-muted);
+    margin:0 0 26px;
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+  .stat{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(16px) saturate(160%);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    border-radius:14px;
+    padding:12px 8px;
+    text-align:center;
+  }
+  .stat .n{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:22px;
+    color:var(--hanji);
+    display:block;
+  }
+  .stat .l{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    color:var(--text-on-dark-muted);
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+  }
+
+  /* ---------- Controls (sticky glass bar) ---------- */
+  .controls{
+    position:sticky;
+    top:12px;
+    z-index:5;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    padding:12px;
+    margin:26px 0 22px;
+    background:var(--glass-bg-strong);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(20px) saturate(160%);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  .search{flex:1 1 150px; min-width:0;}
+  .search input{
+    width:100%;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    color:var(--text-on-dark);
+    font-family:'Work Sans', sans-serif;
+    font-size:14px;
+    padding:9px 12px;
+    border-radius:10px;
+    outline:none;
+  }
+  .search input::placeholder{color:var(--text-on-dark-muted);}
+  .search input:focus{border-color:var(--blush); box-shadow:0 0 0 3px rgba(217,141,151,0.2);}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--glass-border);
+    color:var(--text-on-dark-muted);
+    padding:7px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+  }
+  .chip:hover{border-color:var(--blush-dim); color:var(--text-on-dark);}
+  .chip:focus-visible, .search input:focus-visible, .sortbtn:focus-visible{
+    outline:2px solid var(--blush);
+    outline-offset:2px;
+  }
+  .chip.active{
+    background:var(--blush);
+    border-color:var(--blush);
+    color:#2a1418;
+  }
+  .sortbtn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--glass-border);
+    color:var(--text-on-dark-muted);
+    padding:7px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    margin-left:auto;
+  }
+  .sortbtn:hover{color:var(--text-on-dark); border-color:var(--gold);}
+
+  /* ---------- Log entries ---------- */
+  .log{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:16px;
+  }
+  @media (min-width:520px){
+    .log{grid-template-columns:repeat(3, 1fr);}
+  }
+  @media (min-width:900px){
+    .log{grid-template-columns:repeat(4, 1fr); gap:20px;}
+  }
+  @media (min-width:1200px){
+    .log{grid-template-columns:repeat(5, 1fr);}
+  }
+
+  .entry{
+    display:flex;
+    flex-direction:column;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(18px) saturate(150%);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    border-radius:16px;
+    box-shadow:0 8px 26px rgba(0,0,0,0.2);
+    opacity:0;
+    transform:translateY(18px) scale(0.98);
+    transition:opacity 0.5s ease, transform 0.5s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+  }
+  .entry::before{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(120deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 40%);
+    pointer-events:none;
+    z-index:1;
+  }
+  .entry.show{opacity:1; transform:translateY(0) scale(1);}
+  .entry:hover{
+    border-color:var(--glass-border);
+    box-shadow:0 16px 40px rgba(0,0,0,0.35);
+  }
+
+  .cover{
+    width:100%;
+    aspect-ratio:2 / 3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Song Myung', serif;
+    font-size:44px;
+    color:var(--ink);
+    overflow:hidden;
+    position:relative;
+  }
+  .cover img{width:100%; height:100%; object-fit:cover; display:block;}
+  .spine{position:absolute; left:0; right:0; bottom:0; height:5px;}
+
+  .entry-body{flex:1; min-width:0; padding:14px;}
+  .title-block h3{
+    font-family:'Song Myung', serif;
+    font-weight:400;
+    font-size:17px;
+    margin:0 0 2px;
+    line-height:1.22;
+    color:var(--hanji);
+  }
+  .title-kr{font-size:11px; color:var(--text-on-dark-muted);}
+  .meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--text-on-dark-muted);
+    margin:7px 0;
+  }
+  .meta span:not(:last-child)::after{content:"·"; margin:0 5px; color:var(--ink-line);}
+
+  .row2{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;}
+  .rating{font-size:12px; letter-spacing:1.5px; color:var(--blush);}
+  .status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:3px 8px;
+    border-radius:999px;
+  }
+  .status.completed{background:rgba(127,160,143,0.2); color:var(--celadon);}
+  .status.watching{background:rgba(217,141,151,0.2); color:var(--blush);}
+  .status.dropped{background:rgba(167,158,176,0.15); color:var(--text-on-dark-muted);}
+  .status.plan{background:rgba(133,144,184,0.2); color:var(--slate);}
+  .note{
+    font-size:12.5px; line-height:1.5; color:var(--text-on-dark-muted); margin:9px 0 0;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+
+  .empty{text-align:center; padding:60px 20px; color:var(--text-on-dark-muted); font-family:'Song Myung', serif; font-size:17px;}
+  .hidden{display:none;}
+  footer{text-align:center; padding:40px 0 10px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-on-dark-muted); opacity:0.5;}
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0; z-index:20;
+    background:rgba(10,9,15,0.55);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.3s ease;
+  }
+  .modal-backdrop.open{opacity:1; pointer-events:auto;}
+  .modal{
+    width:100%; max-width:440px;
+    background:rgba(30,27,40,0.75);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(28px) saturate(160%);
+    -webkit-backdrop-filter:blur(28px) saturate(160%);
+    border-radius:20px;
+    padding:26px;
+    box-shadow:0 24px 70px rgba(0,0,0,0.5);
+    transform:translateY(24px) scale(0.97);
+    transition:transform 0.3s ease;
+    max-height:86vh;
+    overflow-y:auto;
+  }
+  .modal-backdrop.open .modal{transform:translateY(0) scale(1);}
+  .modal-poster{
+    width:100%;
+    aspect-ratio:2 / 3;
+    max-height:260px;
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Song Myung', serif;
+    font-size:56px;
+    color:var(--ink);
+    margin-bottom:16px;
+    position:relative;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+  .modal-poster img{width:100%; height:100%; object-fit:cover; display:block;}
+  .modal-poster .spine{position:absolute; left:0; right:0; bottom:0; height:6px;}
+
+  .modal-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .modal-close{
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--glass-border);
+    color:var(--text-on-dark);
+    width:32px; height:32px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:16px;
+    line-height:1;
+    flex:0 0 auto;
+  }
+  .modal-close:hover{background:rgba(255,255,255,0.12);}
+  .modal h2{font-family:'Song Myung', serif; font-weight:400; font-size:26px; margin:0 0 2px; color:var(--hanji);}
+  .modal .title-kr{font-size:13px; margin-bottom:14px;}
+  .modal .meta{margin:10px 0 16px;}
+  .field-label{font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-on-dark-muted); margin:16px 0 8px;}
+  .dot-input{display:flex; gap:6px;}
+  .dot-input button{
+    background:none; border:none; cursor:pointer; font-size:22px; color:var(--ink-line); padding:2px;
+    transition:transform 0.15s ease, color 0.15s ease;
+  }
+  .dot-input button.filled{color:var(--blush);}
+  .dot-input button:hover{transform:scale(1.2);}
+  .status-input{display:flex; flex-wrap:wrap; gap:8px;}
+  .status-opt{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px;
+    border:1px solid var(--glass-border); background:rgba(255,255,255,0.04);
+    color:var(--text-on-dark-muted); padding:6px 11px; border-radius:999px; cursor:pointer;
+  }
+  .status-opt.active{background:var(--blush); border-color:var(--blush); color:#2a1418;}
+  .modal .note{font-size:14.5px; color:var(--text-on-dark); margin-top:14px; line-height:1.6;}
+
+  @media (max-width:480px){
+    .masthead{padding:44px 0 24px;}
+    .cover{font-size:32px;}
+    .title-block h3{font-size:16px;}
+    .controls{top:8px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .entry{transition:none; opacity:1; transform:none;}
+    .orb{animation:none;}
+    .masthead h1{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="orb orb4"></div>
+</div>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">A personal record</p>
+    <h1>Viewing Log</h1>
+    <p class="sub">every drama I've started, finished, or abandoned — tap a card for details</p>
+    <div class="stats">
+      <div class="stat"><span class="n" id="stat-count">0</span><span class="l">Dramas</span></div>
+      <div class="stat"><span class="n" id="stat-eps">0</span><span class="l">Episodes</span></div>
+      <div class="stat"><span class="n" id="stat-avg">0.0</span><span class="l">Avg rating</span></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="search">
+      <input type="text" id="search" placeholder="Search your log..." aria-label="Search dramas" />
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by status"></div>
+    <button class="sortbtn" id="sortbtn">sort: recent</button>
+  </div>
+
+  <main class="log" id="log"></main>
+  <p class="empty hidden" id="empty">Your log is empty — add your first watch in the DATA array below.</p>
+
+  <footer>viewing log · updated by hand</footer>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-poster" id="modalPoster"></div>
+    <div class="modal-top">
+      <div>
+        <h2 id="modalTitle"></h2>
+        <div class="title-kr" id="modalTitleKr"></div>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="meta" id="modalMeta"></div>
+
+    <div class="field-label">Your rating</div>
+    <div class="dot-input" id="modalRating"></div>
+
+    <div class="field-label">Status</div>
+    <div class="status-input" id="modalStatus"></div>
+
+    <p class="note" id="modalNote"></p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   YOUR DRAMAS GO HERE.
+   Delete the 4 examples below and add your own entries.
+   Fields:
+     title        - English title (required)
+     titleKr      - Korean title, optional, leave "" if unknown
+     year         - release year
+     episodes     - number watched/total
+     genre        - e.g. "Romance", "Thriller", "Legal", "Family"
+     status       - "Completed" | "Watching" | "Dropped" | "Plan to Watch"
+     rating       - 0 to 5 (whole numbers), use 0 if not yet watched
+     dateWatched  - "YYYY-MM" for sorting, or "" if unknown/not watched
+     note         - a short one or two line thought/review
+     poster       - optional image URL, leave "" to auto-generate a cover
+   Tap any card on the page to open it and adjust rating/status live.
+   ============================================================ */
+const DATA = [
+  {
+    title: "Alice in Borderland S1",
+    titleKr: "아리스 인 보더랜드 1",
+    year: 2020,
+    episodes: 8,
+    genre: "sci-fi thriller, survival, psychological drama",
+    status: "Completed",
+    rating: 5,
+    note: "Started as a joke recommendation, finished in three days flat.",
+    poster: "./Watched List/AIB s1.jpg"
+  },
+  {
+    title: "Alice in Borderland S2",
+    titleKr: "아리스 인 보더랜드 2",
+    year: 2022,
+    episodes: 8,
+    genre: "sci-fi thriller, survival, psychological drama",
+    status: "Completed",
+    rating: 5,
+    note: "Cried more over the neighbourhood than the actual romance.",
+    poster: "./Watched List/AIB s2.jpg"
+  },
+  {
+    title: "Alice in Borderland S3",
+    titleKr: "아리스 인 보더랜드 3",
+    year: 2025,
+    episodes: 8,
+    genre: "sci-fi thriller, survival, psychological drama",
+    status: "Completed",
+    rating: 4,
+    note: "On season two. The band practice scenes are doing something to me.",
+    poster: "./Watched List/AIB s3.jpg"
+  },
+  {
+    title: "#Alive",
+    titleKr: "#살아있다",
+    year: 2020,
+    episodes: 1,
+    genre: "zombie apocalypse, survival horror, and thriller ",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Alive.jpg"
+  },
+  {
+    title: "All of us are dead",
+    titleKr: "지금 우리 학교는",
+    year: 2022,
+    episodes: 12,
+    genre: "Horror, Action, Thriller, Science fiction",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/All of us are dead.jpg"
+  },
+  {
+    title: "Badland Hunters",
+    titleKr: "황야",
+    year: 2024,
+    episodes: 1,
+    genre: "post-apocalyptic action, thriller, dystopian sci-fi",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Badland Hunters.jpg"
+  },
+  {
+    title: "Black Knight",
+    titleKr: "택배기사",
+    year: 2023,
+    episodes: 6,
+    genre: "science fiction, dystopian action, adventure",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Black Knight.jpg"
+  },
+  {
+    title: "Bloodhounds S1",
+    titleKr: "사냥개들 1",
+    year: 2023,
+    episodes: 8,
+    genre: "action, crime, thriller, drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Bloodhound s1.png"
+  },
+  {
+    title: "Bloodhounds S2",
+    titleKr: "사냥개들 2",
+    year: 2026,
+    episodes: 7,
+    genre: "action, crime, thriller, drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Bloodhounds s2.png"
+  },
+  {
+    title: "Brave Citizen",
+    titleKr: "용감한 시민",
+    year: 2023,
+    episodes: 1,
+    genre: "action, comedy, drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Brave Citizen.jpg"
+  },
+  {
+    title: "Colony",
+    titleKr: "콜로니",
+    year: 2026,
+    episodes: 1,
+    genre: "action horror, zombie thriller, body horror",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Colony.jpg"
+  },
+  {
+    title: "Dragon Wars",
+    titleKr: "디 워",
+    year: 2007,
+    episodes: 1,
+    genre: "fantasy, monster action, creature feature",
+    status: "Completed",
+    rating: 3,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Dragon Wars.jpg"
+  },
+  {
+    title: "Duty after School",
+    titleKr: "방과 후 전쟁활동",
+    year: 2023,
+    episodes: 10,
+    genre: "military sci-fi, thriller, dystopian, drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Duty after School.jpg"
+  },
+  {
+    title: "The Great Flood",
+    titleKr: "대홍수",
+    year: 2025,
+    episodes: 1,
+    genre: "sci-fi disaster, action, survival thriller",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Great Flood.jpg"
+  },
+  {
+    title: "Happiness",
+    titleKr: "해피니스",
+    year: 2021,
+    episodes: 12,
+    genre: "thriller, action, romance, apocalyptic",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Happiness.jpg"
+  },
+  {
+    title: "I saw the Devil",
+    titleKr: "악마를 보았다",
+    year: 2010,
+    episodes: 1,
+    genre: "action thriller, psychological thriller, revenge tragedy",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/I Saw the Devil.jpg"
+  },
+  {
+    title: "If wishes could kill",
+    titleKr: "소원이 살인을 하면",
+    year: 2026,
+    episodes: 8,
+    genre: "young adult horror, supernatural mystery, thriller",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/If Wishes Could Kill.jpg"
+  },
+  {
+    title: "Mouse",
+    titleKr: "마우스",
+    year: 2021,
+    episodes: 21,
+    genre: "crime thriller, psychological thriller, mystery, suspense, sci-fi",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Mouse.jpg"
+  },
+  {
+    title: "Newtopia",
+    titleKr: "뉴토피아",
+    year: 2025,
+    episodes: 8,
+    genre: "zombie apocalypse, romantic comedy, action, thriller",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Newtopia.jpg"
+  },
+  {
+    title: "ONE: High School Heroes",
+    titleKr: "ONE: 하이스쿨 히어로즈",
+    year: 2025,
+    episodes: 8,
+    genre: "action, youth/coming-of-age, and drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/ONE.jpg"
+  },
+  {
+    title: "Outlaws",
+    titleKr: "아웃로우스",
+    year: 2017,
+    episodes: 1,
+    genre: "crime action, police procedural",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Outlaws.jpg"
+  },
+  {
+    title: "The Roundup",
+    titleKr: "라운드업",
+    year: 2022,
+    episodes: 1,
+    genre: "crime action, police procedural",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/The Roundup.jpg"
+  },
+  {
+    title: "The Roundup: No way out",
+    titleKr: "라운드업: 노 웨이 아웃",
+    year: 2023,
+    episodes: 1,
+    genre: "crime action, police procedural",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Roundup2.jpg"
+  },
+  {
+    title: "The Roundup: Punishment",
+    titleKr: "라운드업: 페니스먼트",
+    year: 2024,
+    episodes: 1,
+    genre: "crime action, police procedural",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Roundup3.jpg"
+  },
+  {
+    title: "Parasite",
+    titleKr: "파라사이트",
+    year: 2019,
+    episodes: 1,
+    genre: "black comedy, thriller, satire, drama with elements of psychological horror",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Parasite.jpg"
+  },
+  {
+    title: "Shark: The Beginning",
+    titleKr: "상어: 시작",
+    year: 2021,
+    episodes: 1,
+    genre: "action, drama, martial arts",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Shark the begining.jpg"
+  },
+  {
+    title: "Shark: The Storm",
+    titleKr: "상어: 폭풍",
+    year: 2025,
+    episodes: 6,
+    genre: "action, crime thriller, and martial arts drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Shark the storm.jpg"
+  },
+  {
+    title: "Shop for Killers: S1",
+    titleKr: "킬러들의 쇼핑몰 1",
+    year: 2024,
+    episodes: 8,
+    genre: "action, thriller, mystery, and drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Shop for killers s1.jpg"
+  },
+  {
+    title: "Shop for Killers: S2",
+    titleKr: "킬러들의 쇼핑몰 2",
+    year: 2024,
+    episodes: 8,
+    genre: "action, thriller, mystery, and drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Shop for killers s2.jpg"
+  },
+  {
+    title: "SLINE",
+    titleKr: "S라인",
+    year: 2025,
+    episodes: 6,
+    genre: "action, thriller, mystery, and drama",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/SLINE.jpg"
+  },
+  {
+    title: "Squid Game: S1",
+    titleKr: "오징어 게임 1",
+    year: 2021,
+    episodes: 9,
+    genre: "survival thriller, dystopian, death game",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Squide Game S1.jpg"
+  },
+  {
+    title: "Squid Game: S2",
+    titleKr: "오징어 게임 2",
+    year: 2024,
+    episodes: 7,
+    genre: "survival thriller, dystopian, death game",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Squid Game s2.jpg"
+  },
+  {
+    title: "Squid Game: S3",
+    titleKr: "오징어 게임 3",
+    year: 2025,
+    episodes: 6,
+    genre: "survival thriller, dystopian, death game",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Squid Game s3.jpg"
+  },
+  {
+    title: "Strangers from Hell",
+    titleKr: "지옥에서 온 이방인들",
+    year: 2019,
+    episodes: 10,
+    genre: "psychological thriller, horror, mystery",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Strangers from Hell.jpg"
+  },
+  {
+    title: "Study Group",
+    titleKr: "스터디 그룹",
+    year: 2025,
+    episodes: 10,
+    genre: "action comedy, teen drama, martial arts, school life",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Study Group.jpg"
+  },
+  {
+    title: "Sweet Home: S1",
+    titleKr: "단풍 1",
+    year: 2020,
+    episodes: 10,
+    genre: "apocalyptic horror, monster fiction, thriller, sci-fi",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/sweet home S1.webp"
+  },
+  {
+    title: "Sweet Home: S2",
+    titleKr: "단풍 2",
+    year: 2022,
+    episodes: 8,
+    genre: "apocalyptic horror, monster fiction, thriller, sci-fi",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/sweet home S2.jpg"
+  },
+  {
+    title: "Teach you a lesson",
+    titleKr: "참교육",
+    year: 2026,
+    episodes: 10,
+    genre: "action, school drama, social commentary",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Teach you a lesson.jpg"
+  },
+  {
+    title: "The 8 show",
+    titleKr: "더 에이트 쇼",
+    year: 2024,
+    episodes: 8,
+    genre: "dark comedy, thriller, survival drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/The 8 show.jpg"
+  },
+  {
+    title: "The Gangster, the Cop, the Devil",
+    titleKr: "악인전",
+    year: 2019,
+    episodes: 1,
+    genre: "action, crime thriller, neo-noir",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/The Gangster, the Cop, the Devil.jpg"
+  },
+  {
+    title: "The Witch: Part 1",
+    titleKr: "마녀 1",
+    year: 2018,
+    episodes: 1,
+    genre: "action, science fiction, mystery, thriller",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/The Witch part 1.jpg"
+  },
+  {
+    title: "The Witch: Part 2",
+    titleKr: "마녀 2",
+    year: 2022,
+    episodes: 1,
+    genre: "action, science fiction, mystery, thriller",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Witch part 2.jpg"
+  },
+  {
+    title: "Vigilante",
+    titleKr: "비질란테",
+    year: 2023,
+    episodes: 8,
+    genre: "action, crime, thriller, revenge",
+    status: "Watching",
+    rating: "-",
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Vigilante.jpg"
+  },
+  {
+    title: "Train to Busan",
+    titleKr: "부산행",
+    year: 2016,
+    episodes: 1,
+    genre: "action horror, zombie thriller",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Train to Busan.jpg"
+  },
+  {
+    title: "Peninsula",
+    titleKr: "반도",
+    year: 2020,
+    episodes: 1,
+    genre: "action horror, zombie thriller",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Peninsula.jpg"
+  },
+  {
+    title: "Weak Hero: S1",
+    titleKr: "약한영웅 1",
+    year: 2022,
+    episodes: 8,
+    genre: "school action, thriller, coming-of-age drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Weak Hero S1.jpg"
+  },
+  {
+    title: "Weak Hero: S2",
+    titleKr: "약한영웅 2",
+    year: 2025,
+    episodes: 8,
+    genre: "school action, thriller, coming-of-age drama",
+    status: "Completed",
+    rating: 5,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Weak Hero S2.jpg"
+  },
+  {
+    title: "Wonderfools",
+    titleKr: "원더풀스",
+    year: 2025,
+    episodes: 12,
+    genre: "superhero, comedy, action-adventure, fantasy, mystery",
+    status: "Completed",
+    rating: 4,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Wonderfools.jpg"
+  },
+  {
+    title: "Zoom 100",
+    titleKr: "좀100",
+    year: 2025,
+    episodes: 12,
+    genre: "comedy horror, zombie apocalypse, dystopian",
+    status: "Completed",
+    rating: 3,
+    note: "Queued up next, everyone keeps telling me to watch it.",
+    poster: "./Watched List/Zom100.jpg"
+  },
+
+
+
+
+];
+
+/* ============================================================
+   Rendering — no need to edit below this line
+   ============================================================ */
+const spineColors = ["#d98d97", "#7fa08f", "#c9a968", "#8590b8"];
+function colorForGenre(genre){
+  let hash = 0;
+  for (let i = 0; i < genre.length; i++) hash = genre.charCodeAt(i) + ((hash << 5) - hash);
+  return spineColors[Math.abs(hash) % spineColors.length];
+}
+function statusClass(status){
+  return { "Completed":"completed", "Watching":"watching", "Dropped":"dropped", "Plan to Watch":"plan" }[status] || "plan";
+}
+function ratingDots(r){ return "●".repeat(r) + "○".repeat(5 - r); }
+function initials(title){ return title.trim().charAt(0).toUpperCase(); }
+
+let activeFilter = "All";
+let query = "";
+let sortMode = "recent"; // recent | rating
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pointerFine = window.matchMedia("(pointer: fine)").matches;
+
+function statusCounts(){
+  const counts = { All: DATA.length };
+  DATA.forEach(d => { counts[d.status] = (counts[d.status] || 0) + 1; });
+  return counts;
+}
+
+function renderChips(){
+  const chipsEl = document.getElementById("chips");
+  const statuses = ["All", "Completed", "Watching", "Plan to Watch", "Dropped"];
+  const counts = statusCounts();
+  chipsEl.innerHTML = "";
+  statuses.forEach(s => {
+    if (s !== "All" && !counts[s]) return;
+    const btn = document.createElement("button");
+    btn.className = "chip" + (s === activeFilter ? " active" : "");
+    btn.textContent = s + " (" + (counts[s] || 0) + ")";
+    btn.addEventListener("click", () => { activeFilter = s; renderChips(); renderLog(); });
+    chipsEl.appendChild(btn);
+  });
+}
+
+function animateNumber(el, target, decimals){
+  if (reduceMotion){ el.textContent = decimals ? target.toFixed(decimals) : target; return; }
+  const start = 0;
+  const duration = 700;
+  const startTime = performance.now();
+  function tick(now){
+    const p = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = start + (target - start) * eased;
+    el.textContent = decimals ? val.toFixed(decimals) : Math.round(val);
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function renderStats(){
+  const count = DATA.length;
+  const eps = DATA.reduce((sum, d) => sum + (Number(d.episodes) || 0), 0);
+  const rated = DATA.filter(d => d.rating > 0);
+  const avg = rated.length ? (rated.reduce((s, d) => s + d.rating, 0) / rated.length) : 0;
+  animateNumber(document.getElementById("stat-count"), count, 0);
+  animateNumber(document.getElementById("stat-eps"), eps, 0);
+  animateNumber(document.getElementById("stat-avg"), avg, 1);
+}
+
+function renderLog(){
+  const logEl = document.getElementById("log");
+  const emptyEl = document.getElementById("empty");
+  logEl.innerHTML = "";
+
+  let items = DATA.map((d, i) => ({ d, i }));
+  if (activeFilter !== "All") items = items.filter(x => x.d.status === activeFilter);
+  if (query.trim()) {
+    const q = query.trim().toLowerCase();
+    items = items.filter(x =>
+      x.d.title.toLowerCase().includes(q) ||
+      (x.d.titleKr && x.d.titleKr.toLowerCase().includes(q)) ||
+      x.d.genre.toLowerCase().includes(q)
+    );
+  }
+  if (sortMode === "rating") {
+    items.sort((a, b) => b.d.rating - a.d.rating);
+  } else {
+    items.sort((a, b) => (b.d.dateWatched || "0000-00").localeCompare(a.d.dateWatched || "0000-00"));
+  }
+
+  if (items.length === 0) {
+    emptyEl.classList.remove("hidden");
+    emptyEl.textContent = DATA.length === 0
+      ? "Your log is empty — add your first watch in the DATA array."
+      : "No dramas match this search or filter.";
+    return;
+  }
+  emptyEl.classList.add("hidden");
+
+  items.forEach(({ d, i }) => {
+    const entry = document.createElement("article");
+    entry.className = "entry";
+    entry.tabIndex = 0;
+    entry.setAttribute("role", "button");
+    entry.setAttribute("aria-label", "Open details for " + d.title);
+    entry.dataset.idx = i;
+
+    const cover = document.createElement("div");
+    cover.className = "cover";
+    const color = colorForGenre(d.genre);
+    if (d.poster) {
+      cover.style.background = "var(--hanji)";
+      const img = document.createElement("img");
+      img.src = d.poster;
+      img.alt = d.title + " poster";
+      cover.appendChild(img);
+    } else {
+      cover.style.background = "var(--hanji)";
+      cover.textContent = initials(d.title);
+    }
+    const spine = document.createElement("div");
+    spine.className = "spine";
+    spine.style.background = color;
+    cover.appendChild(spine);
+
+    const body = document.createElement("div");
+    body.className = "entry-body";
+    body.innerHTML = `
+      <div class="title-block">
+        <h3>${d.title}</h3>
+        ${d.titleKr ? `<div class="title-kr">${d.titleKr}</div>` : ""}
+      </div>
+      <div class="meta">
+        <span>${d.year}</span><span>${d.episodes} eps</span><span>${d.genre}</span>
+      </div>
+      <div class="row2">
+        <span class="rating" aria-label="Rating ${d.rating} of 5">${d.rating > 0 ? ratingDots(d.rating) : "—"}</span>
+        <span class="status ${statusClass(d.status)}">${d.status}</span>
+      </div>
+      ${d.note ? `<p class="note">${d.note}</p>` : ""}
+    `;
+
+    entry.appendChild(cover);
+    entry.appendChild(body);
+    entry.addEventListener("click", () => openModal(i));
+    entry.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(i); } });
+
+    if (pointerFine && !reduceMotion) {
+      entry.addEventListener("mousemove", (e) => {
+        const rect = entry.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        entry.style.transform = `translateY(-3px) rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 4).toFixed(2)}deg)`;
+      });
+      entry.addEventListener("mouseleave", () => { entry.style.transform = ""; });
+    }
+
+    logEl.appendChild(entry);
+  });
+
+  observeEntries();
+}
+
+function observeEntries(){
+  const entries = document.querySelectorAll(".entry");
+  if (!("IntersectionObserver" in window) || reduceMotion) {
+    entries.forEach(e => e.classList.add("show"));
+    return;
+  }
+  const io = new IntersectionObserver((records) => {
+    records.forEach(rec => {
+      if (rec.isIntersecting) {
+        rec.target.classList.add("show");
+        io.unobserve(rec.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  entries.forEach(e => io.observe(e));
+}
+
+/* ---------- Modal ---------- */
+const backdrop = document.getElementById("modalBackdrop");
+let currentIdx = null;
+
+function openModal(idx){
+  currentIdx = idx;
+  const d = DATA[idx];
+  const posterEl = document.getElementById("modalPoster");
+  const color = colorForGenre(d.genre);
+  posterEl.innerHTML = "";
+  if (d.poster) {
+    posterEl.style.background = "var(--hanji)";
+    const img = document.createElement("img");
+    img.src = d.poster;
+    img.alt = d.title + " poster";
+    posterEl.appendChild(img);
+  } else {
+    posterEl.style.background = "var(--hanji)";
+    posterEl.textContent = initials(d.title);
+  }
+  const spine = document.createElement("div");
+  spine.className = "spine";
+  spine.style.background = color;
+  posterEl.appendChild(spine);
+
+  document.getElementById("modalTitle").textContent = d.title;
+  document.getElementById("modalTitleKr").textContent = d.titleKr || "";
+  document.getElementById("modalMeta").innerHTML = `<span>${d.year}</span><span>${d.episodes} eps</span><span>${d.genre}</span>`;
+  document.getElementById("modalNote").textContent = d.note || "No notes yet.";
+  renderModalRating();
+  renderModalStatus();
+  backdrop.classList.add("open");
+  document.getElementById("modalClose").focus();
+}
+
+function closeModal(){
+  backdrop.classList.remove("open");
+  currentIdx = null;
+  renderStats();
+  renderChips();
+  renderLog();
+}
+
+function renderModalRating(){
+  const el = document.getElementById("modalRating");
+  el.innerHTML = "";
+  const d = DATA[currentIdx];
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i <= d.rating ? "●" : "○";
+    btn.className = i <= d.rating ? "filled" : "";
+    btn.setAttribute("aria-label", "Set rating to " + i);
+    btn.addEventListener("click", () => { d.rating = i; renderModalRating(); });
+    el.appendChild(btn);
+  }
+}
+
+function renderModalStatus(){
+  const el = document.getElementById("modalStatus");
+  el.innerHTML = "";
+  const d = DATA[currentIdx];
+  ["Completed", "Watching", "Plan to Watch", "Dropped"].forEach(s => {
+    const btn = document.createElement("button");
+    btn.className = "status-opt" + (d.status === s ? " active" : "");
+    btn.textContent = s;
+    btn.addEventListener("click", () => { d.status = s; renderModalStatus(); });
+    el.appendChild(btn);
+  });
+}
+
+document.getElementById("modalClose").addEventListener("click", closeModal);
+backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && backdrop.classList.contains("open")) closeModal(); });
+
+document.getElementById("search").addEventListener("input", (e) => {
+  query = e.target.value;
+  renderLog();
+});
+
+document.getElementById("sortbtn").addEventListener("click", () => {
+  sortMode = sortMode === "recent" ? "rating" : "recent";
+  document.getElementById("sortbtn").textContent = "sort: " + sortMode;
+  renderLog();
+});
+
+renderStats();
+renderChips();
+renderLog();
+</script>
+
+</body>
+</html>
